@@ -1,0 +1,25 @@
+use "std/array.jam";
+use "textGrid.jam";
+-- let vec2 = use "vec2";
+-- let rigidBody = use "rigidBody";
+let g = love.graphics;
+
+let frameRate = 60;
+let grid = textGrid(20, 20, 600, 1000, 60, 100, 0.5);
+
+love.load = () =>{
+    g.setDefaultFilter("nearest", "nearest", 1);
+    
+    frameRate = 60;
+    -- grid:debug_print!;
+};
+
+love.update = delta =>{
+    frameRate = frameRate + (1 / delta - frameRate * 0.05);
+};
+
+love.draw = () =>{
+    g.print(string.format("%.2f", frameRate), 5, 5);
+
+    grid:draw!;
+};

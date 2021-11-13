@@ -1,0 +1,54 @@
+use "std/types.jam";
+use "std/array.jam";
+use "std/iter.jam";
+use "vec2.jam";
+
+let g = love.graphics;
+
+prototype textGrid {
+    constructor: (x: number = 0, y: number = 0,
+        w: number = 100, h: number = 100,
+        chars_x: number = 10, chars_y: number = 10, scale: number = 1) :=>{
+        @ar = [];
+        for i in range chars_y, {
+            @ar:push([]);
+            for j in range chars_x, @ar#i:push(":");
+        };
+        @origin = vec2(x, y);
+        @grid_size = vec2(chars_x, chars_y);
+        @draw_size = vec2(w, h);
+        @scale = vec2.one * scale;
+    };
+
+    draw: () :=> {
+        g.push!;
+        g.scale @scale:split!;
+        let pos = @origin:copy!;
+        let step = @draw_size / @grid_size;
+
+        for i in range @grid_size.y, {
+            for j in range @grid_size.x, {
+                g.print(@ar#i#j, pos:split!);
+                pos.x = pos.x + step.x;
+            };
+            pos.y = pos.y + step.y;
+            pos.x = @origin.x;
+        };
+        g.pop!;
+    };
+
+    assign: (pos: vec2, val: number) :=> {
+        let x, y = ((pos - @origin) / @draw_size):floor!:split!;
+        @ar#x#y = val;
+    };
+
+    __tostring: () :=> {
+        let s = "";
+        for i in range @grid_size.y, {
+            s = s .. "\n";
+            for j in range @grid_size.x, s = s .. @ar#i#j;
+        };
+        => s;
+    };
+};
+export textGrid;

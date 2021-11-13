@@ -1,0 +1,42 @@
+-- C:/Misc_languages/jammy/std/iter.jam - GENERATED 2021-11-12, 9:54:12 p.m.
+-- JAMMY BOILERPLATE
+local __require_params = (...);if not __require_params then error("Cannot run this module because it was not compiled as an entry point.") end;local __parent_dir = __require_params:match("(.-)[^%.]+$"):gsub("%.", "/");local function import(path) return require(path_join(__parent_dir, path):gsub("/", ".")) end;local exports={};__env = {};setmetatable(__env, { __index = _G });
+-- END JAMMY BOILERPLATE
+local __match_type, __typecheck, __typecheck_arg, __typecheck_arg_optional, __typecheck_arg_union, __typecheck_arg_union_optional, types, type_advanced, typechecks = __import(9, {__match_type, __typecheck, __typecheck_arg, __typecheck_arg_optional, __typecheck_arg_union, __typecheck_arg_union_optional, types, type_advanced, typechecks}, require(path_join(__root_dir, "std/types"):gsub("/", ".")));__env.__match_type, __env.__typecheck, __env.__typecheck_arg, __env.__typecheck_arg_optional, __env.__typecheck_arg_union, __env.__typecheck_arg_union_optional, __env.types, __env.type_advanced, __env.typechecks = __match_type, __typecheck, __typecheck_arg, __typecheck_arg_optional, __typecheck_arg_union, __typecheck_arg_union_optional, types, type_advanced, typechecks;
+local number = {  };
+local number_metatable;number_metatable = function() return getmetatable(0) end;
+number.times_inc = function(self, f) if not has_metatable(self, (number_metatable())) then error("bad argument 'self' to " .. debug.getinfo(1, 'nl').name .. " (got " .. type(self) .. ")", 2) end;
+__typecheck_arg(typechecks, 1, f, "function");for i = 1, self do f(i) end end;
+number.times = function(self, f) if not has_metatable(self, (number_metatable())) then error("bad argument 'self' to " .. debug.getinfo(1, 'nl').name .. " (got " .. type(self) .. ")", 2) end;
+__typecheck_arg(typechecks, 1, f, "function");for i = 0, ((self)-1) do f(i) end end;
+number.to_inc = function(self, to, f) if not has_metatable(self, (number_metatable())) then error("bad argument 'self' to " .. debug.getinfo(1, 'nl').name .. " (got " .. type(self) .. ")", 2) end;
+__typecheck_arg(typechecks, 1, to, "number");__typecheck_arg(typechecks, 2, f, "function");for i = self, to do f(i) end end;
+number.to = function(self, to, f) if not has_metatable(self, (number_metatable())) then error("bad argument 'self' to " .. debug.getinfo(1, 'nl').name .. " (got " .. type(self) .. ")", 2) end;
+__typecheck_arg(typechecks, 1, to, "number");__typecheck_arg(typechecks, 2, f, "function");for i = self, ((to)-1) do f(i) end end;
+number.__index = number;
+local iter;iter = function(a) __typecheck_arg(typechecks, 1, a, "table");local n, elements = 0, {  };
+for k, _ in pairs(a) do do elements[((#(elements)+1))] = k;
+n = (n+1);
+end end;
+local i = 0;
+do return function() i = (i+1);
+if (i<=n) then do return elements[i] end end end end end;
+local reduce;reduce = function(initial, iterator_table, f) __typecheck_arg(typechecks, 2, iterator_table, "table");__typecheck_arg(typechecks, 3, f, "function");local itr, invar, var = unpack(iterator_table);
+while true do do local v = tbl(itr(invar, var));
+if (v[1]==nil) then break end;
+var = v[1];
+initial = (f(initial, unpack(v)) or initial);
+end end;
+do return initial end end;
+local table_mt = {  };
+table_mt.from_iterator = function(itr, invar, var) __typecheck_arg(typechecks, 1, itr, "function");local t = {  };
+while true do do local v = tbl(itr(invar, var));
+if (v[1]==nil) then break else if (#(v)==1) then t[((#(t)+1))] = v[1] else t[((#(t)+1))] = v end end;
+var = v[1];
+end end;
+do return t end end;
+exports[1] = number -- to be imported as 'number';
+exports[2] = iter -- to be imported as 'iter';
+exports[3] = reduce -- to be imported as 'reduce';
+exports[4] = table_mt -- to be imported as 'table_mt';
+ return exports;
