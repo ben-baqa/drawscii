@@ -1,25 +1,44 @@
 use "std/array.jam";
 use "textGrid.jam";
+use "vec2.jam";
+
+use "conf.jam";
+
 -- let vec2 = use "vec2";
 -- let rigidBody = use "rigidBody";
 let g = love.graphics;
+let m = love.mouse;
 
 let frameRate = 60;
+-- let min_window_size = vec2(WINDOW_WIDTH, WINDOW_HEIGHT);
+-- let window_size = min_window_size:copy!;
+let fullscreen = false;
+
 let grid = textGrid(20, 20, 600, 1000, 60, 100, 0.5);
 
 love.load = () =>{
     g.setDefaultFilter("nearest", "nearest", 1);
     
     frameRate = 60;
-    -- grid:debug_print!;
+
+    -- let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
+    -- let s = "";
+    -- for i in range len chars, {
+    --     let n = len chars - ( i + 1);
+    --     s = s .. chars#n;
+    -- };
+    -- print s;
 };
 
 love.update = delta =>{
     frameRate = frameRate + (1 / delta - frameRate * 0.05);
+
+    let mouse_pos = vec2(m.getX!, m.getY!);
+    grid:assign(mouse_pos, 1);
 };
 
 love.draw = () =>{
-    g.print(string.format("%.2f", frameRate), 5, 5);
+    -- g.print(string.format("%.2f", frameRate), 5, 5);
 
     grid:draw!;
 };

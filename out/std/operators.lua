@@ -1,9 +1,0 @@
--- C:/Misc_languages/jammy/std/operators.jam - GENERATED 2021-11-12, 9:54:12 p.m.
--- JAMMY BOILERPLATE
-local __require_params = (...);if not __require_params then error("Cannot run this module because it was not compiled as an entry point.") end;local __parent_dir = __require_params:match("(.-)[^%.]+$"):gsub("%.", "/");local function import(path) return require(path_join(__parent_dir, path):gsub("/", ".")) end;local exports={};__env = {};setmetatable(__env, { __index = _G });
--- END JAMMY BOILERPLATE
-local operators = { ["unm"] = function(x) return -(x) end, ["add"] = function(a, b) return (a+b) end, ["sub"] = function(a, b) return (a-b) end, ["mul"] = function(a, b) return (a*b) end, ["div"] = function(a, b) return (a/b) end, ["idiv"] = function(a, b) return math.floor((a)/(b)) end, ["mod"] = function(a, b) return math.fmod((a), (b)) end, ["pow"] = function(a, b) return (a^b) end, ["concat"] = function(a, b) return (a..b) end, ["eq"] = function(a, b) return (a==b) end, ["lt"] = function(a, b) return (a<b) end, ["le"] = function(a, b) return (a<=b) end, ["neq"] = function(a, b) return (a~=b) end, ["gt"] = function(a, b) return (a>b) end, ["ge"] = function(a, b) return (a>=b) end };
-local equivalence_operators = { ["eq"] = function(a, b) return (a==b) end, ["lt"] = function(a, b) return (a<b) end, ["le"] = function(a, b) return (a<=b) end, ["neq"] = function(a, b) return (a~=b) end, ["gt"] = function(a, b) return (a>b) end, ["ge"] = function(a, b) return (a>=b) end };
-exports[1] = operators -- to be imported as 'operators';
-exports[2] = equivalence_operators -- to be imported as 'equivalence_operators';
- return exports;

@@ -1,9 +1,0 @@
--- C:/Misc_languages/jammy/std/table.jam - GENERATED 2021-11-12, 9:54:12 p.m.
--- JAMMY BOILERPLATE
-local __require_params = (...);if not __require_params then error("Cannot run this module because it was not compiled as an entry point.") end;local __parent_dir = __require_params:match("(.-)[^%.]+$"):gsub("%.", "/");local function import(path) return require(path_join(__parent_dir, path):gsub("/", ".")) end;local exports={};__env = {};setmetatable(__env, { __index = _G });
--- END JAMMY BOILERPLATE
-local __match_type, __typecheck, __typecheck_arg, __typecheck_arg_optional, __typecheck_arg_union, __typecheck_arg_union_optional, types, type_advanced, typechecks = __import(9, {__match_type, __typecheck, __typecheck_arg, __typecheck_arg_optional, __typecheck_arg_union, __typecheck_arg_union_optional, types, type_advanced, typechecks}, require(path_join(__root_dir, "std/types"):gsub("/", ".")));__env.__match_type, __env.__typecheck, __env.__typecheck_arg, __env.__typecheck_arg_optional, __env.__typecheck_arg_union, __env.__typecheck_arg_union_optional, __env.types, __env.type_advanced, __env.typechecks = __match_type, __typecheck, __typecheck_arg, __typecheck_arg_optional, __typecheck_arg_union, __typecheck_arg_union_optional, types, type_advanced, typechecks;
-local table_mt = { ["push"] = function(t, v) __typecheck_arg(typechecks, 1, t, "table");t[((#(t)+1))] = v end, ["set"] = function(t, k, v) __typecheck_arg(typechecks, 1, t, "table");__typecheck_arg(typechecks, 2, k, "exists");t[k] = v end, ["contains_key"] = function(t, k) __typecheck_arg(typechecks, 1, t, "table");__typecheck_arg(typechecks, 2, k, "exists");return not (not (t[k])) end, ["contains_value"] = function(t, v) __typecheck_arg(typechecks, 1, t, "table");__typecheck_arg(typechecks, 2, v, "exists");return not (not ((function() for k, _v in pairs(t) do if (v==_v) then do return true end end end;
-end)())) end };
-exports[1] = table_mt -- to be imported as 'table';
- return exports;

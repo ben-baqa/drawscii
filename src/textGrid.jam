@@ -4,6 +4,7 @@ use "std/iter.jam";
 use "vec2.jam";
 
 let g = love.graphics;
+CHARS = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
 
 prototype textGrid {
     constructor: (x: number = 0, y: number = 0,
@@ -12,7 +13,7 @@ prototype textGrid {
         @ar = [];
         for i in range chars_y, {
             @ar:push([]);
-            for j in range chars_x, @ar#i:push(":");
+            for j in range chars_x, @ar#i:push(0);
         };
         @origin = vec2(x, y);
         @grid_size = vec2(chars_x, chars_y);
@@ -28,7 +29,7 @@ prototype textGrid {
 
         for i in range @grid_size.y, {
             for j in range @grid_size.x, {
-                g.print(@ar#i#j, pos:split!);
+                g.print(math.floor (69 * @ar#i#j), pos:split!);
                 pos.x = pos.x + step.x;
             };
             pos.y = pos.y + step.y;
@@ -38,7 +39,15 @@ prototype textGrid {
     };
 
     assign: (pos: vec2, val: number) :=> {
-        let x, y = ((pos - @origin) / @draw_size):floor!:split!;
+        pos = (pos - @origin) / @draw_size;
+        print pos;
+        print @grid_size;
+        print (pos == grid_size);
+        -- print (pos > grid_size);
+        print (pos < grid_size);
+        if pos > @grid_size || pos < vec2.zero, => nil;
+
+        let x, y = pos:floor!:split!;
         @ar#x#y = val;
     };
 
