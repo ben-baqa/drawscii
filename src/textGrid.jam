@@ -46,13 +46,49 @@ prototype textGrid {
         g.pop!;
     };
 
-    assign: (pos: vec2, val: number) :=> {
+
+    write: (pos: vec2, val: number, r: number = 1, mode: string = "write") :=> {
+        let points = @get_points(pos, r);
+
+        for p in points:iter!, @assign(p, val, mode);
+    };
+
+    assign: (pos: vec2, val: number, mode: string = "write") :=> {
         pos = (pos - @origin) * @grid_size / @draw_size;
         if !pos:within @grid_size || !pos:exceeds vec2.zero, => nil;
 
         let x, y = pos:floor!:split!;
         -- print("setting value ${val} at position ${pos}");
-        @ar#y#x = val;
+        match {
+            mode == "write" => @ar#y#x = val;
+            mode == "add" => @ar#y#x = @ar#y#x + val;
+            mode == "mult" => @ar#y#x = @ar#y#x * val;
+        };
+    };
+
+    get_points: (pos: vec2, r: number = 1) :=> {
+        let points = [];
+        points:push pos;
+        points:concat @ripple(pos, r, pos, @grid_size / @draw_size, 0);
+        => points;
+    };
+
+    ripple: (origin: vec2, r: number, pos: vec2, dir: vec2, reach: number) :=> {
+        let points = [];
+        let ar = [];
+        pos = pos + dir;
+        ar:push pos;
+        for i in range reach, {
+            ar:push(pos - (vec2.right * dir));
+            ar:push(pos - (vec2.up * dir));
+        };
+
+        for v in ar:iter!, {
+            if (v - origin):square_magnitude! < (r * r), points:push v;
+        };
+        if len points < 1, => [];
+
+        => points:concat position_helper(origin, r, pos, dir, reach + 1);
     };
 
     __tostring: () :=> {

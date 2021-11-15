@@ -4,38 +4,41 @@ use "uiButton.jam";
 use "uiSlider.jam";
 
 STRENGTH = 1;
-BRUSH_SIZE = 1;
+BRUSH_SIZE = 5;
 
 prototype ui {
     constructor: () :=> {
-        @elements = [
-            uiButton(675, 50, 175, 60, "ADD"),
-            uiButton(675, 125, 175, 60, "WRITE"),
-            uiButton(675, 200, 175, 60, "MULT"),
-            uiSlider(675, 300, 175, 20, 0, 1, "strength"),
-            uiSlider(675, 350, 175, 20, 1, 10, "size"),
-            uiButton(725, 700, 120, 30, "COPY")
-        ];
+        @elements = {
+            add: uiButton(675, 50, 175, 60, "ADD"),
+            write: uiButton(675, 125, 175, 60, "WRITE"),
+            mult: uiButton(675, 200, 175, 60, "MULT"),
+            strength: uiSlider(675, 300, 175, 20, 0, 1, "strength"),
+            size: uiSlider(675, 350, 175, 20, 5, 500, "size"),
+            copy: uiButton(725, 700, 120, 30, "COPY")
+        };
 
-        @elements#3.on_change = () :=> {
+        @elements.strength.on_change = () :=> {
             STRENGTH = @val;
+        };
+        @elements.size.on_change = () :=> {
+            BRUSH_SIZE = @val;
         };
     };
 
     update: v: vec2 :=> {
-        for e in @elements:iter!, e:update v;
+        for n, e in ^@elements, e:update v;
     };
 
     draw: () :=> {
-        for e in @elements:iter!, e:draw!;
+        for n, e in ^@elements, e:draw!;
     };
 
     on_click: () :=> {
-        for e in @elements:iter!, e:on_click!;
+        for n, e in ^@elements, e:on_click!;
     };
     
     off_click: () :=> {
-        for e in @elements:iter!, e:off_click!;
+        for n, e in ^@elements, e:off_click!;
     };
 };
 export ui;

@@ -8,30 +8,21 @@ use "textGrid.jam";
 use "vec2.jam";
 use "ui.jam";
 
-
--- let vec2 = use "vec2";
--- let rigidBody = use "rigidBody";
 let g = love.graphics;
 let m = love.mouse;
 
 let frameRate = 60;
 let m_pos = vec2(m.getX!, m.getY!);
--- let min_window_size = vec2(WINDOW_WIDTH, WINDOW_HEIGHT);
--- let window_size = min_window_size:copy!;
+
 let fullscreen = false;
 
 let grid = textGrid(25, 25, 600, 750, 55, 32, 0.35);
 let ui = ui!;
-ui.elements#5.on_press = () :=> {
+ui.elements.copy.on_press = () :=> {
     print grid;
     love.system.setClipboardText(grid:__tostring!);
 };
--- let buttons = [
---     uiButton(615, 50, 170, 80, "Add"),
---     uiButton(615, 150, 50, 80, "Write"),
---     uiButton(615, 250, 170, 80, "Mult"),
---     uiButton(615, 350, 170, 80, "sdhjfdhsdkfhskdjfhksjdhfks")
--- ];
+
 
 love.load = () => {
     -- g.setDefaultFilter("nearest", "nearest", 1);
@@ -44,26 +35,21 @@ love.update = delta => {
 
     m_pos = vec2(m.getX!, m.getY!);
     let m_down = m.isDown 1;
-    if m_down, grid:assign(m_pos, STRENGTH);
+    -- if m_down, grid:assign(m_pos, STRENGTH);
+    
+    if m_down, grid:write(m_pos, STRENGTH, BRUSH_SIZE);
     ui:update m_pos;
-    -- for b in buttons:iter!, b:update(m_pos, m_down);
 };
 
 love.draw = () => {
     g.setColor(1, 1, 1);
     -- g.print(string.format("%.2f", frameRate), 5, 5);
     -- g.print(m_pos:__tostring!, 325, 5);
-    
-    -- for b in buttons:iter!, b:draw!;
+    g.circle("line", m_pos.x, m_pos.y, BRUSH_SIZE, BRUSH_SIZE);
+
     ui:draw!;
     grid:draw!;
 };
 
-love.mousepressed = (x, y, button, istouch) => {
-    -- for b in buttons:iter!, b:on_click!;
-    ui:on_click!;
-};
-
-love.mousereleased = (x, y, button, istouch) => {
-    ui:off_click!;
-};
+love.mousepressed = (x, y, button, istouch) => ui:on_click!;
+love.mousereleased = (x, y, button, istouch) => ui:off_click!;

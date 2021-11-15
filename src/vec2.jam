@@ -36,6 +36,10 @@ prototype vec2{
     magnitude: () :=> >> => math.sqrt @square_magnitude!;
     angle: () :=> math.atan2(@y,@x);
 
+    within_range: (v: vec2, r: number) :=> {
+        => ((v - @):square_magnitude!) < (r * r);
+    };
+
     clamp: with {
         (a: number | vec2) :=> match (let t = type a) {
             t == "number" => {
