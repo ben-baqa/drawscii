@@ -1,3 +1,5 @@
+*.lua
+
 # Logs
 logs
 *.log

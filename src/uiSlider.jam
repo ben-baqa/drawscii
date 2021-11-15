@@ -1,0 +1,58 @@
+use "std/types.jam";
+use "uiElement.jam";
+use "vec2.jam";
+
+let g = love.graphics;
+
+prototype uiSlider from uiElement{
+    constructor: (x: number = 0, y: number = 0,
+        w: number = 100, h: number = 50,
+        min: number = 1, max: number = 1, s: string = "slider") :=> {
+
+        super(x, y, w, h, s);
+        @held = false;
+        @min = min;
+        @max = max;
+        @val = min;
+        @slider_val = 0;
+    };
+
+    update: (mouse_pos: vec2) :=> {
+        super mouse_pos;
+
+        if @held, @get_val mouse_pos.x;
+    };
+
+    get_val: x: number :=> {
+        let v = (x - @origin.x) / @size.x;
+        if v < 0, v = 0 else if v > 1, v = 1;
+        if @slider_val ~= v, {
+            @slider_val = v;
+            @val = @min + ((@max - @min) * v);
+            @on_change!;
+        };
+    };
+
+    draw: () :=> {
+        -- if @focus, g.rectangle("line", @origin.x, @origin.y, @size:split!);
+        let mode = "line";
+        -- if @focus, mode = "fill";
+        g.rectangle(mode, @origin.x, @origin.y + (@size.y * (3/8)), @size.x, @size.y / 4);
+        mode = "fill";
+        if @held, mode = "line";
+        g.rectangle(mode, @origin.x - (@size.y / 4) + (@slider_val * @size.x), @origin.y, @size.y / 2, @size.y);
+    };
+
+    on_click: () :=> {
+        if @focus, @held = true;
+    };
+
+    off_click: () :=> {
+        @held = false;
+    };
+
+    on_change: () :=> {
+
+    };
+};
+export uiSlider;

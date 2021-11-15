@@ -1,0 +1,43 @@
+use "std/array.jam";
+use "std/types.jam";
+use "uiButton.jam";
+use "uiSlider.jam";
+
+STRENGTH = 1;
+BRUSH_SIZE = 1;
+
+prototype ui {
+    constructor: () :=> {
+        @elements = [
+            uiButton(675, 50, 175, 60, "ADD"),
+            uiButton(675, 125, 175, 60, "WRITE"),
+            uiButton(675, 200, 175, 60, "MULT"),
+            uiSlider(675, 300, 175, 20, 0, 1, "strength"),
+            uiSlider(675, 350, 175, 20, 1, 10, "size"),
+            uiButton(725, 700, 120, 30, "COPY")
+        ];
+
+        @elements#3.on_change = () :=> {
+            STRENGTH = @val;
+        };
+    };
+
+    update: v: vec2 :=> {
+        for e in @elements:iter!, e:update v;
+    };
+
+    draw: () :=> {
+        for e in @elements:iter!, e:draw!;
+    };
+
+    on_click: () :=> {
+        for e in @elements:iter!, e:on_click!;
+    };
+    
+    off_click: () :=> {
+        for e in @elements:iter!, e:off_click!;
+    };
+};
+export ui;
+
+

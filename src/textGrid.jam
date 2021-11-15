@@ -1,15 +1,18 @@
 use "std/types.jam";
 use "std/array.jam";
-use "std/iter.jam";
+-- use "std/iter.jam";
+use "std/string.jam";
 use "vec2.jam";
 
 let g = love.graphics;
-CHARS = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
+let y_off = FONT_SIZE / 2;
+CHARS = " .'^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
 
 prototype textGrid {
     constructor: (x: number = 0, y: number = 0,
         w: number = 100, h: number = 100,
         chars_x: number = 10, chars_y: number = 10, scale: number = 1) :=>{
+        
         @ar = [];
         for i in range chars_y, {
             @ar:push([]);
@@ -18,44 +21,48 @@ prototype textGrid {
         @origin = vec2(x, y);
         @grid_size = vec2(chars_x, chars_y);
         @draw_size = vec2(w, h);
-        @scale = vec2.one * scale;
+        @scale = scale;
     };
 
     draw: () :=> {
+        g.rectangle("line", @origin.x - 2, @origin.y - (@scale * y_off),
+            (@draw_size + vec2(4, @scale *y_off)):split!);
+
         g.push!;
-        g.scale @scale:split!;
-        let pos = @origin:copy!;
-        let step = @draw_size / @grid_size;
+        g.translate(@origin:split!);
+        g.scale(@scale, @scale);
+        let step = @draw_size / (@grid_size * @scale);
 
         for i in range @grid_size.y, {
+            g.push!;
             for j in range @grid_size.x, {
-                g.print(math.floor (69 * @ar#i#j), pos:split!);
-                pos.x = pos.x + step.x;
+                let n = math.floor ((len CHARS - 1) * @ar#i#j) + 1;
+                g.print(CHARS:sub(n,n), FONT_SIZE / 8, -y_off);
+                g.translate(step.x, 0);
             };
-            pos.y = pos.y + step.y;
-            pos.x = @origin.x;
+            g.pop!;
+            g.translate(0, step.y);
         };
         g.pop!;
     };
 
     assign: (pos: vec2, val: number) :=> {
-        pos = (pos - @origin) / @draw_size;
-        print pos;
-        print @grid_size;
-        print (pos == grid_size);
-        -- print (pos > grid_size);
-        print (pos < grid_size);
-        if pos > @grid_size || pos < vec2.zero, => nil;
+        pos = (pos - @origin) * @grid_size / @draw_size;
+        if !pos:within @grid_size || !pos:exceeds vec2.zero, => nil;
 
         let x, y = pos:floor!:split!;
-        @ar#x#y = val;
+        -- print("setting value ${val} at position ${pos}");
+        @ar#y#x = val;
     };
 
     __tostring: () :=> {
         let s = "";
         for i in range @grid_size.y, {
             s = s .. "\n";
-            for j in range @grid_size.x, s = s .. @ar#i#j;
+            for j in range @grid_size.x, {
+                let n = math.floor ((len CHARS - 1) * @ar#i#j) + 1;
+                s = s .. CHARS:sub(n, n);
+            };
         };
         => s;
     };

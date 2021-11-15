@@ -1,0 +1,65 @@
+use "std/types.jam";
+use "uiElement.jam";
+use "vec2.jam";
+
+let g = love.graphics;
+
+prototype uiButton from uiElement{
+    constructor: (x: number = 0, y: number = 0,
+        w: number = 100, h: number = 100,
+        s: string = "button", toggle: boolean? = false) :=> {
+        
+        super(x, y, w, h, s);
+        @is_toggle = toggle;
+        @toggle = false;
+        @on = false;
+    };
+
+    draw: () :=> {
+        g.push!;
+        g.setColor(1, 1, 1);
+        if (@on && @focus) || (!@on && !@focus), {
+            g.rectangle("line", @origin.x, @origin.y, @size.x, @size.y);
+            @draw_label!;
+        }
+        else {
+            g.rectangle("fill", @origin.x, @origin.y, @size.x, @size.y);
+            g.setColor(0, 0, 0);
+            @draw_label!;
+        };
+        g.setColor(1, 1, 1);
+        g.pop!;
+    };
+
+    on_click: () :=> {
+        if @focus, {
+            if !@toggle, {
+                toggle = true;
+                @on_press!;
+                if @is_toggle, @on = !@on;
+            };
+        };
+    };
+
+    off_click: () :=> {
+        @toggle = false;
+    };
+
+    draw_label: () :=> {
+        -- let s = @size / 50;
+        -- let p = vec2(@origin.x +(@size.x / 2), @origin.y + (@size.y / 2) - (FONT_SIZE * @text_scale / 2));
+        g.push!;
+        g.translate((@origin + (@size / 2) + (vec2.up * FONT_SIZE / 8)):split!);
+        g.scale(@text_scale, @text_scale);
+        -- g.circle("line", 0, 0, 10);
+        g.printf(@label, 0, 0, @size.x * 2, "center", 0, 1, 1, @size.x, (@size.y / 2));
+        g.pop!;
+    };
+
+    __tostring: () :=> @label;
+
+    on_press: () :=> {
+        print @label .. " pressed";
+    };
+};
+export uiButton;

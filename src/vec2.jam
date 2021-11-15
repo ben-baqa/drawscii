@@ -18,10 +18,12 @@ prototype vec2{
         t == "table" => vec2(@x / a.x, @y / a.y),
         else @2
     };
-    __eq: v: vec2 :=> (@x == v.x) && (@y == v.y);
-    __lt: v: vec2 :=> (@x < v.x) && (@y < v.y);
-    -- __gt: v: vec2 :=> (@x > v.x) && (@y > v.y);
+    __eq: v: vec2 :=> @x == v.x && @y == v.y;
+    -- __lt: v: vec2 :=> @square_magnitude! < v:square_magnitude!;
     __tostring: () :=> "(${@x}, ${@y})";
+
+    within: v: vec2 :=> (@x < v.x) && (@y < v.y);
+    exceeds: v: vec2 :=> (@x > v.x) && (@y > v.y);
 
     zero: vec2(0, 0);
     one: vec2(1, 1);
@@ -35,35 +37,39 @@ prototype vec2{
     angle: () :=> math.atan2(@y,@x);
 
     clamp: with {
-    (a: number | vec2) :=> match (let t = type a) {
-        t == "number" => {
-            clamp_x a;
-            clamp_y a;
-        },
-        t == "table" =>{
-            clamp_x a.x;
-            clamp_y a.y;
-        },
-        else @
-    };
-    (min: number | vec2, max: number | vec2) :=> {
-        if type min == "number", min = @one * min;
-        if type max == "number", max = @one * max;
-        clamp_x(min.x, max.x);
-        clamp_y(min.y, max.y);
-    };
+        (a: number | vec2) :=> match (let t = type a) {
+            t == "number" => {
+                clamp_x a;
+                clamp_y a;
+            },
+            t == "table" =>{
+                clamp_x a.x;
+                clamp_y a.y;
+            },
+            else @
+        };
+        (min: number | vec2, max: number | vec2) :=> {
+            if type min == "number", min = @one * min;
+            if type max == "number", max = @one * max;
+            clamp_x(min.x, max.x);
+            clamp_y(min.y, max.y);
+        };
     };
     clamp_min: (a: number | vec2) :=> {
         if type a == "number", a = @one * a;
         if @x < a.x, @x = a.x;
         if @y < a.y, @y = a.y;
     };
-    clamp_x: (x: number) :=> >> if @x > x, @x = x;
-    clamp_x: (min: number, max: number) :=> >>
-        if @x > max, @x = max else if @x < min, @x = min;
-    clamp_y: (y: number) :=> >> if @y > y, @y = y;
-    clamp_y: (min: number, max: number) :=> >>
-        if @y > max, @y = max else if @y < min, @y = min;
+    clamp_x: with {
+        (x: number) :=> >> if @x > x, @x = x;
+        (min: number, max: number) :=> >>
+            if @x > max, @x = max else if @x < min, @x = min;
+    };
+    clamp_y: with {
+        (y: number) :=> >> if @y > y, @y = y;
+        (min: number, max: number) :=> >>
+            if @y > max, @y = max else if @y < min, @y = min;
+    };
 
     split: () :=> (@x, @y);
     floor: () :=> vec2(math.floor @x, math.floor @y);

@@ -1,0 +1,33 @@
+use "std/types.jam";
+use "vec2.jam";
+
+prototype uiElement {
+    constructor: (x: number = 0, y: number = 0,
+        w: number = 100, h: number = 100, s: string = "thing") :=> {
+
+        @origin = vec2(x, y);
+        @size = vec2(w, h);
+        @label = s;
+        @focus = false;
+        @text_scale = 0.8 * h / FONT_SIZE;
+    };
+
+    update: (mouse_pos: vec2) :=> {
+        @focus = mouse_pos:exceeds @origin && mouse_pos:within (@origin + @size);
+    };
+
+    draw: () :=> {
+        g.rectangle("line", @origin.x, @origin.y, @size.x, @size.y);
+        @draw_label!;
+    };
+
+    on_click: () :=> nil;
+    off_click: () :=> nil;
+    
+    draw_label: () :=> {
+        let s = @size / 50;
+        let p = @origin + (vec2.down * @size / 3);
+        g.printf(@label, p.x, p.y, 50, "center", 0, s.x, s.y);
+    };
+};
+export uiElement;

@@ -1,8 +1,9 @@
 WINDOW_TITLE = "Drawscii";
-WINDOW_WIDTH = 800;
-WINDOW_HEIGHT = 600;
+WINDOW_WIDTH = 900;
+WINDOW_HEIGHT = 800;
 
--- FONT_LOCATION = "assets/font.tff"
+FONT_LOCATION = "assets/COMIC.TTF";
+FONT_SIZE = 48;
 
 love.conf = t =>{
     t.console = true;
@@ -13,9 +14,11 @@ love.conf = t =>{
     w.heght = WINDOW_HEIGHT;
     w.minwidth = WINDOW_WIDTH;
     w.minheight = WINDOW_HEIGHT;
-    w.resizable = true;
+    w.resizable = false;
     w.fullscreen = false;
     w.title = WINDOW_TITLE;
+    w.display = 1;
+    -- w.vsync = 0;
 
     let m = t.modules;
     m.joystick = false;

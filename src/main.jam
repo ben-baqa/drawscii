@@ -1,8 +1,13 @@
+use "conf.jam";
+
 use "std/array.jam";
+use "std/string.jam";
+use "std/iter.jam";
+
 use "textGrid.jam";
 use "vec2.jam";
+use "ui.jam";
 
-use "conf.jam";
 
 -- let vec2 = use "vec2";
 -- let rigidBody = use "rigidBody";
@@ -10,35 +15,55 @@ let g = love.graphics;
 let m = love.mouse;
 
 let frameRate = 60;
+let m_pos = vec2(m.getX!, m.getY!);
 -- let min_window_size = vec2(WINDOW_WIDTH, WINDOW_HEIGHT);
 -- let window_size = min_window_size:copy!;
 let fullscreen = false;
 
-let grid = textGrid(20, 20, 600, 1000, 60, 100, 0.5);
+let grid = textGrid(25, 25, 600, 750, 55, 32, 0.35);
+let ui = ui!;
+ui.elements#5.on_press = () :=> {
+    print grid;
+    love.system.setClipboardText(grid:__tostring!);
+};
+-- let buttons = [
+--     uiButton(615, 50, 170, 80, "Add"),
+--     uiButton(615, 150, 50, 80, "Write"),
+--     uiButton(615, 250, 170, 80, "Mult"),
+--     uiButton(615, 350, 170, 80, "sdhjfdhsdkfhskdjfhksjdhfks")
+-- ];
 
-love.load = () =>{
-    g.setDefaultFilter("nearest", "nearest", 1);
-    
+love.load = () => {
+    -- g.setDefaultFilter("nearest", "nearest", 1);
+    g.setNewFont(FONT_LOCATION, FONT_SIZE);
     frameRate = 60;
-
-    -- let chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'.";
-    -- let s = "";
-    -- for i in range len chars, {
-    --     let n = len chars - ( i + 1);
-    --     s = s .. chars#n;
-    -- };
-    -- print s;
 };
 
-love.update = delta =>{
+love.update = delta => {
     frameRate = frameRate + (1 / delta - frameRate * 0.05);
 
-    let mouse_pos = vec2(m.getX!, m.getY!);
-    grid:assign(mouse_pos, 1);
+    m_pos = vec2(m.getX!, m.getY!);
+    let m_down = m.isDown 1;
+    if m_down, grid:assign(m_pos, STRENGTH);
+    ui:update m_pos;
+    -- for b in buttons:iter!, b:update(m_pos, m_down);
 };
 
-love.draw = () =>{
+love.draw = () => {
+    g.setColor(1, 1, 1);
     -- g.print(string.format("%.2f", frameRate), 5, 5);
-
+    -- g.print(m_pos:__tostring!, 325, 5);
+    
+    -- for b in buttons:iter!, b:draw!;
+    ui:draw!;
     grid:draw!;
+};
+
+love.mousepressed = (x, y, button, istouch) => {
+    -- for b in buttons:iter!, b:on_click!;
+    ui:on_click!;
+};
+
+love.mousereleased = (x, y, button, istouch) => {
+    ui:off_click!;
 };
