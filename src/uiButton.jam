@@ -46,20 +46,15 @@ prototype uiButton from uiElement{
     };
 
     draw_label: () :=> {
-        -- let s = @size / 50;
-        -- let p = vec2(@origin.x +(@size.x / 2), @origin.y + (@size.y / 2) - (FONT_SIZE * @text_scale / 2));
         g.push!;
         g.translate((@origin + (@size / 2) + (vec2.up * FONT_SIZE / 8)):split!);
         g.scale(@text_scale, @text_scale);
-        -- g.circle("line", 0, 0, 10);
         g.printf(@label, 0, 0, @size.x * 2, "center", 0, 1, 1, @size.x, (@size.y / 2));
         g.pop!;
     };
 
     __tostring: () :=> @label;
 
-    on_press: () :=> {
-        print @label .. " pressed";
-    };
+    on_press: () :=>  print @label .. " pressed";
 };
 export uiButton;

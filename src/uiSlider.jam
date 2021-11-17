@@ -41,6 +41,8 @@ prototype uiSlider from uiElement{
         mode = "fill";
         if @held, mode = "line";
         g.rectangle(mode, @origin.x - (@size.y / 4) + (@slider_val * @size.x), @origin.y, @size.y / 2, @size.y);
+
+        @draw_label vec2.up * @size.y;
     };
 
     on_click: () :=> {
@@ -51,8 +53,6 @@ prototype uiSlider from uiElement{
         @held = false;
     };
 
-    on_change: () :=> {
-
-    };
+    on_change: () :=> nil;
 };
 export uiSlider;

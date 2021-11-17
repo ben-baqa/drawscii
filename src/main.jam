@@ -17,12 +17,11 @@ let m_pos = vec2(m.getX!, m.getY!);
 let fullscreen = false;
 
 let grid = textGrid(25, 25, 600, 750, 55, 32, 0.35);
-let ui = ui!;
-ui.elements.copy.on_press = () :=> {
-    print grid;
-    love.system.setClipboardText(grid:__tostring!);
-};
+let ui = ui grid;
 
+let touch = false;
+let touch_id = -1;
+let touch_pressure = 1;
 
 love.load = () => {
     -- g.setDefaultFilter("nearest", "nearest", 1);
@@ -36,8 +35,16 @@ love.update = delta => {
     m_pos = vec2(m.getX!, m.getY!);
     let m_down = m.isDown 1;
     -- if m_down, grid:assign(m_pos, STRENGTH);
-    
-    if m_down, grid:write(m_pos, STRENGTH, BRUSH_SIZE);
+
+    if touch, {
+        if touch_id ~= -1, {
+            touch_pressure = love.touch.getPressure touch_id;
+            print touch_pressure;
+        };
+        -- touch_pressure = love.touch.getPressure!;
+        grid:write(m_pos, STRENGTH * touch_pressure, BRUSH_SIZE * touch_pressure);
+    }
+    else if m_down, grid:write(m_pos, STRENGTH, BRUSH_SIZE);
     ui:update m_pos;
 };
 
@@ -45,7 +52,7 @@ love.draw = () => {
     g.setColor(1, 1, 1);
     -- g.print(string.format("%.2f", frameRate), 5, 5);
     -- g.print(m_pos:__tostring!, 325, 5);
-    g.circle("line", m_pos.x, m_pos.y, BRUSH_SIZE, BRUSH_SIZE);
+    g.circle("line", m_pos.x, m_pos.y, touch_pressure * BRUSH_SIZE, touch_pressure * BRUSH_SIZE);
 
     ui:draw!;
     grid:draw!;
@@ -53,3 +60,13 @@ love.draw = () => {
 
 love.mousepressed = (x, y, button, istouch) => ui:on_click!;
 love.mousereleased = (x, y, button, istouch) => ui:off_click!;
+
+love.touchpressed = (id, x, y, dx, dy, pressure) => {
+    print "touch pressed ${id}";
+    touch = true;
+    touch_id = id;
+    -- grid:write(m_pos, STRENGTH * pressure, BRUSH_SIZE * pressure);
+};
+love.touchreleased = (id, x, y, dx, dy, pressure) => {
+    touch = false;
+};

@@ -2,26 +2,39 @@ use "std/array.jam";
 use "std/types.jam";
 use "uiButton.jam";
 use "uiSlider.jam";
+use "textGrid.jam";
 
 STRENGTH = 1;
 BRUSH_SIZE = 5;
+PAINT_MODE = "write";
 
 prototype ui {
-    constructor: () :=> {
+    constructor: grid: textGrid :=> {
         @elements = {
             add: uiButton(675, 50, 175, 60, "ADD"),
-            write: uiButton(675, 125, 175, 60, "WRITE"),
-            mult: uiButton(675, 200, 175, 60, "MULT"),
-            strength: uiSlider(675, 300, 175, 20, 0, 1, "strength"),
-            size: uiSlider(675, 350, 175, 20, 5, 500, "size"),
-            copy: uiButton(725, 700, 120, 30, "COPY")
+            sub: uiButton(675, 115, 175, 60, "SUB"),
+            write: uiButton(675, 180, 175, 60, "WRITE"),
+            mult: uiButton(675, 245, 175, 60, "MULT"),
+            strength: uiSlider(675, 360, 175, 20, 0, 1, "strength"),
+            size: uiSlider(675, 400, 175, 20, 5, 50, "size"),
+            clear: uiButton(725, 700, 120, 30, "CLEAR"),
+            copy: uiButton(725, 750, 120, 30, "COPY")
         };
 
-        @elements.strength.on_change = () :=> {
-            STRENGTH = @val;
-        };
-        @elements.size.on_change = () :=> {
-            BRUSH_SIZE = @val;
+        @elements.strength.slider_val = 1;
+
+        @elements.add.on_press = () :=> >> PAINT_MODE = "add";
+        @elements.sub.on_press = () :=> >> PAINT_MODE = "sub";
+        @elements.write.on_press = () :=> >> PAINT_MODE = "write";
+        @elements.mult.on_press = () :=> >> PAINT_MODE = "mult";
+
+        @elements.strength.on_change = () :=> >> STRENGTH = @val;
+        @elements.size.on_change = () :=> >> BRUSH_SIZE = @val;
+
+        @elements.clear.on_press = () :=> >> grid:clear!;
+        @elements.copy.on_press = () :=> {
+            print grid;
+            love.system.setClipboardText(grid:__tostring!);
         };
     };
 

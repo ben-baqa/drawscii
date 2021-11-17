@@ -1,5 +1,8 @@
 use "std/types.jam";
+use "std/function.jam";
 use "vec2.jam";
+
+let g = love.graphics;
 
 prototype uiElement {
     constructor: (x: number = 0, y: number = 0,
@@ -20,14 +23,26 @@ prototype uiElement {
         g.rectangle("line", @origin.x, @origin.y, @size.x, @size.y);
         @draw_label!;
     };
-
+    
+    draw_label: with {
+        (offset: vec2) :=> {
+            g.push!;
+            g.translate((@origin + (@size / 2) + (vec2.up * FONT_SIZE / 8) + offset):split!);
+            g.scale(@text_scale, @text_scale);
+            g.printf(@label, 0, 0, @size.x * 2, "center", 0, 1, 1, @size.x, (@size.y / 2));
+            g.pop!;
+        };
+        () :=> {
+            g.push!;
+            g.translate((@origin + (@size / 2) + (vec2.up * FONT_SIZE / 8)):split!);
+            g.scale(@text_scale, @text_scale);
+            g.printf(@label, 0, 0, @size.x * 2, "center", 0, 1, 1, @size.x, (@size.y / 2));
+            g.pop!;
+        };
+    };
+    
     on_click: () :=> nil;
     off_click: () :=> nil;
-    
-    draw_label: () :=> {
-        let s = @size / 50;
-        let p = @origin + (vec2.down * @size / 3);
-        g.printf(@label, p.x, p.y, 50, "center", 0, s.x, s.y);
-    };
+    __tostring: () :=> @label;
 };
 export uiElement;

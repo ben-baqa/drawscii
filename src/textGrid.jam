@@ -6,7 +6,7 @@ use "vec2.jam";
 
 let g = love.graphics;
 let y_off = FONT_SIZE / 2;
-CHARS = " .'^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+CHARS = " .'\",:;-~_^><i!lI+?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
 
 prototype textGrid {
     constructor: (x: number = 0, y: number = 0,
@@ -22,11 +22,14 @@ prototype textGrid {
         @grid_size = vec2(chars_x, chars_y);
         @draw_size = vec2(w, h);
         @scale = scale;
+
+        @ignore = [];
     };
 
     draw: () :=> {
         g.rectangle("line", @origin.x - 2, @origin.y - (@scale * y_off),
             (@draw_size + vec2(4, @scale *y_off)):split!);
+        -- g.rectangle("line", @origin.x, @origin.y, (@draw_size / @grid_size):split!);
 
         g.push!;
         g.translate(@origin:split!);
@@ -47,52 +50,94 @@ prototype textGrid {
     };
 
 
-    write: (pos: vec2, val: number, r: number = 1, mode: string = "write") :=> {
+    write: (pos: vec2, weight: number, r: number = 5) :=> {
         let points = @get_points(pos, r);
 
-        for p in points:iter!, @assign(p, val, mode);
+        for p in points:iter!, @assign(p, weight);
+        @update_ignore!;
     };
 
-    assign: (pos: vec2, val: number, mode: string = "write") :=> {
+    assign: (pos: vec2, val: number) :=> {
         pos = (pos - @origin) * @grid_size / @draw_size;
         if !pos:within @grid_size || !pos:exceeds vec2.zero, => nil;
 
         let x, y = pos:floor!:split!;
-        -- print("setting value ${val} at position ${pos}");
+        if @should_ignore vec2(x, y), => nil;
         match {
-            mode == "write" => @ar#y#x = val;
-            mode == "add" => @ar#y#x = @ar#y#x + val;
-            mode == "mult" => @ar#y#x = @ar#y#x * val;
+            PAINT_MODE == "write" => @ar#y#x = val;
+            PAINT_MODE == "add" => @ar#y#x = @ar#y#x + val;
+            PAINT_MODE == "sub" => @ar#y#x = @ar#y#x - val;
+            PAINT_MODE == "mult" => @ar#y#x = @ar#y#x * val;
         };
+        if @ar#y#x > 1, @ar#y#x = 1 else if @ar#y#x < 0, @ar#y#x = 0;
+        
+        @ignore:push {point: vec2(x, y), val: 2};
     };
 
     get_points: (pos: vec2, r: number = 1) :=> {
+        -- pos = ((pos - @origin) * @grid_size / @draw_size):floor!;
+        -- pos = (pos * @draw_size / @grid_size) + @origin;
         let points = [];
         points:push pos;
-        points:concat @ripple(pos, r, pos, @grid_size / @draw_size, 0);
+
+        let dir = @draw_size / @grid_size;
+        points = points:concat @ripple(pos, r, pos, dir, 1);
+        points = points:concat @ripple(pos, r, pos, dir * vec2(-1, 1), 1);
+        points = points:concat @ripple(pos, r, pos, dir * vec2(1, -1), 1);
+        points = points:concat @ripple(pos, r, pos, dir * vec2(-1, -1), 1);
         => points;
     };
 
     ripple: (origin: vec2, r: number, pos: vec2, dir: vec2, reach: number) :=> {
+        if reach > 100, => print "Ruh Roh, someone made a Fucky Wucksy";
+
         let points = [];
         let ar = [];
         pos = pos + dir;
         ar:push pos;
-        for i in range reach, {
-            ar:push(pos - (vec2.right * dir));
-            ar:push(pos - (vec2.up * dir));
+        for i in range_inc(1, reach), {
+            ar:push(pos - (vec2.right * dir * i));
+            ar:push(pos + (vec2.up * dir * i));
         };
 
-        for v in ar:iter!, {
+        for v in ar:iter!,
             if (v - origin):square_magnitude! < (r * r), points:push v;
-        };
-        if len points < 1, => [];
+        if points:count! < 1, => [];
 
-        => points:concat position_helper(origin, r, pos, dir, reach + 1);
+        => points:concat @ripple(origin, r, pos, dir, reach + 1);
+    };
+
+    should_ignore: p: vec2 :=> {
+        for x in @ignore:iter!, {
+            if x.point == p, {
+                x.val = x.val + 1;
+                => true;
+            };
+        };
+        => false;
+    };
+
+    update_ignore: () :=> {
+        let cull = [];
+        for x in @ignore:iter!, {
+            x.val = x.val - 1;
+            if x.val < 0, cull:push x;
+        };
+        for x in cull:iter!, @ignore:remove x;
+    };
+
+    clear: () :=> {
+        @ar = [];
+        @writable = [];
+        for i in range @grid_size.y, {
+            @ar:push([]);
+            @writable:push([]);
+            for j in range @grid_size.x, { @ar#i:push(0); @writable#i:push(true); };
+        };
     };
 
     __tostring: () :=> {
-        let s = "";
+        let s = "```";
         for i in range @grid_size.y, {
             s = s .. "\n";
             for j in range @grid_size.x, {
@@ -100,6 +145,7 @@ prototype textGrid {
                 s = s .. CHARS:sub(n, n);
             };
         };
+        s = s .. "```";
         => s;
     };
 };
